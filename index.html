@@ -1,144 +1,149 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pathway Plan Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Route Plan Studio · OFC pathway generator</title>
 <style>
-:root{--bg:#d9dcd6;--paper:#fbfaf5;--ink:#1b1b1b;--mute:#5a5a55;--line:#b9bab2;--cable:#0a5c8a;--hot:#b3261e;--accent:#0a5c8a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171a;--paper:#202327;--ink:#e8e6df;--mute:#9a9a94;--line:#3a3d42;--cable:#5fb4e8;--hot:#ff7b6e;--accent:#5fb4e8}}
-*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif;line-height:1.45}
-.wrap{max-width:1040px;margin:0 auto;padding:14px}
-h1{font:1.3rem Georgia,serif;margin:.2rem 0}h2{font:1rem Georgia,serif;margin:0 0 8px}
-.sub,.note{color:var(--mute);font-size:.82rem;margin:0 0 10px}
-.card{background:var(--paper);border:1px solid var(--line);padding:12px;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-label{display:flex;flex-direction:column;font-size:.78rem;color:var(--mute);gap:3px}
-input,textarea{font:inherit;color:var(--ink);border:1px solid var(--ink);background:var(--paper);padding:6px 8px;width:100%}
-textarea{min-height:120px;font-family:Consolas,monospace;font-size:.82rem}
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin-top:10px}
-button{font:inherit;cursor:pointer;border:1px solid var(--ink);background:var(--paper);color:var(--ink);padding:6px 12px}
-button.p{background:var(--ink);color:var(--paper)}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.tabs button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
-.sheet{background:var(--paper);border:2px solid var(--ink);padding:6px;margin-bottom:14px;overflow-x:auto}
-.sheet svg{display:block;min-width:900px;width:100%;height:auto}
-svg text{fill:var(--ink);font-family:Arial,sans-serif;font-size:9px}
-.err{color:var(--hot);font-size:.85rem;margin-top:8px;min-height:1.2em}
+:root{--ink:#14213d;--mute:#667089;--line:#d3d9e6;--bg:#eaeff7;--card:#fff;--cab:#0f766e;--hot:#c2410c;--pri:#14213d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
+header{background:var(--ink);color:#fff;padding:14px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header h1{font:600 1.25rem Palatino,"Palatino Linotype",Georgia,serif;margin:0;flex:1;min-width:200px}
+header small{display:block;font:400 .78rem system-ui;opacity:.75}
+.main{display:grid;grid-template-columns:350px 1fr;gap:16px;padding:16px;max-width:1500px;margin:0 auto}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px;margin-bottom:14px}
+h2{font:600 1rem Palatino,Georgia,serif;margin:0 0 10px;display:flex;gap:8px;align-items:center}
+h2 b{background:var(--ink);color:#fff;border-radius:50%;width:22px;height:22px;display:grid;place-items:center;font:600 .75rem system-ui}
+label{display:block;font-size:.76rem;color:var(--mute);margin-bottom:8px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:#fff;border:1px solid #aab3c7;border-radius:4px;padding:6px 8px;margin-top:2px}
+textarea{min-height:130px;font:.82rem Consolas,monospace}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;cursor:pointer;border:1px solid var(--ink);background:#fff;color:var(--ink);border-radius:4px;padding:6px 11px}
+button.p{background:var(--ink);color:#fff}button:hover{filter:brightness(.94)}
+:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.arow{display:grid;grid-template-columns:92px 1fr 1fr 30px;gap:5px;margin-bottom:5px}
+.arow input,.arow select{margin:0;padding:5px}.arow button{padding:0}
+.msg{font-size:.82rem;margin-top:8px;min-height:1.2em}.msg.e{color:#b91c1c}.msg.w{color:#a16207}.msg.k{color:var(--cab)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:20px;padding:3px 12px;font-size:.8rem}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button[aria-pressed=true]{background:var(--ink);color:#fff}
+.paper{background-color:#fffef9;background-image:linear-gradient(#e6edf7 1px,transparent 1px),linear-gradient(90deg,#e6edf7 1px,transparent 1px);background-size:20px 20px;border:2px solid var(--ink);padding:6px;overflow-x:auto;margin-bottom:14px}
+.paper svg{display:block;min-width:900px;width:100%;height:auto}
 table{border-collapse:collapse;width:100%;font-size:.85rem}th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
-.scroll{overflow-x:auto}
-</style></head><body><div class="wrap">
-<h1>Pathway Plan Generator</h1>
-<p class="sub">Enter any route's data below. A mini pathway overview and 1 km drawing sheets are generated instantly.</p>
-
-<div class="card"><h2>1. Route details</h2>
-<div class="grid">
-<label>Plan title<input id="title" value="OFC ROUTE PLAN (SMR Jn - BME St.) of Jodhpur Division"></label>
-<label>Start chainage (km/m)<input id="start" value="734/000"></label>
-<label>Offset interval (m)<input id="int" type="number" value="50" min="10" max="100"></label>
-<label>Direction at start<input id="from" value="JNE"></label>
-<label>Direction at end<input id="to" value="TVL"></label>
-<label>Prepared by<input id="prep" value="ABSCO Kolkata"></label>
-<label>Checked by<input id="chk" value="SSE/T/P/JU"></label>
-<label>Approved by<input id="app" value="Dy. CSTE/P/JU"></label>
-</div>
-<div class="two">
-<label>2. Offsets (m) from track, one per interval, separated by commas, spaces or new lines<textarea id="offs"></textarea></label>
-<label>3. Assets, one per line: type, chainage, label (optional)<br>Types: JC, RUB, LC, BRIDGE, CULVERT, STATION<textarea id="assets"></textarea></label>
-</div>
-<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="p" id="gen">Generate pathway</button><button id="sample">Load sample</button><button id="clear">Clear</button></div>
-<div class="err" id="err" role="alert"></div></div>
-
-<div id="out" hidden>
-<div class="card"><h2>Pathway overview</h2><div class="sheet" style="border-width:1px"><svg id="ov" viewBox="0 0 1000 120" role="img" aria-label="Overview of the whole pathway"></svg></div><p class="note" id="stats"></p></div>
-<div class="tabs" id="tabs" role="group" aria-label="Select sheet"></div>
-<div class="sheet"><svg id="svg" viewBox="0 0 1000 430" role="img" aria-label="Route plan sheet"></svg></div>
-<div class="card"><h2>Asset list</h2><div class="scroll"><table id="at"><thead><tr><th>Asset</th><th>Chainage</th><th>Sheet</th></tr></thead><tbody></tbody></table></div></div>
-</div>
-</div>
+.empty{padding:40px 10px;text-align:center;color:var(--mute)}
+#pa{display:none}
+@media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}header,.main{display:none}#pa{display:block}#pa svg{width:100%;height:auto;page-break-after:always}}
+</style></head><body>
+<header><h1>Route Plan Studio<small>Enter a route's offsets and assets, get a sheet-by-sheet OFC plan</small></h1>
+<button id="bPrint">Print / save PDF</button><button id="bSvg">Download this sheet (SVG)</button></header>
+<div class="main"><div>
+<div class="card"><h2><b>1</b>Route</h2>
+<label>Plan title<input id="title"></label>
+<div class="g2"><label>Start chainage (km/m)<input id="start" placeholder="734/000"></label><label>Offset every<select id="it"><option value="25">25 m</option><option value="50">50 m</option><option value="100">100 m</option></select></label>
+<label>Start label<input id="from"></label><label>End label<input id="to"></label>
+<label>Prepared by<input id="prep"></label><label>Checked by<input id="chk"></label></div>
+<label>Approved by<input id="app"></label></div>
+<div class="card"><h2><b>2</b>Offsets (m from track)</h2>
+<textarea id="offs" placeholder="Paste numbers separated by spaces, commas or new lines"></textarea>
+<div class="bar"><button id="bCsv">Import CSV</button><input type="file" id="fCsv" accept=".csv,.txt" hidden></div></div>
+<div class="card"><h2><b>3</b>Assets</h2><div id="rows"></div>
+<div class="bar"><button id="bAdd">+ Add asset</button></div></div>
+<div class="card"><h2>Project file</h2><div class="bar"><button id="bSave">Save as file</button><button id="bLoad">Open file</button><button id="bSample">Load sample</button><button id="bClear">Start blank</button></div><input type="file" id="fJson" accept=".json" hidden>
+<p class="msg k" style="margin-bottom:0">Your work is saved in this browser automatically.</p></div>
+</div><div>
+<div class="msg" id="msg"></div>
+<div id="view"></div></div></div>
+<div id="pa"></div>
 <script>
 const $=id=>document.getElementById(id);
-const SAMPLE_OFFS="15.70 13.30 12.80 13.10 13.20 12.70 19.20 17.40 17.90 18.30 15.30 13.50 3.80 12.60 11.50 10.20 19.50 16.30 14.20 15.10\n11.80 11.60 11.00 11.40 12.00 11.80 11.70 10.80 11.00 10.40 19.30 19.80 10.00 10.40 10.60 10.20 10.00 10.30 10.10 10.40\n18.80 19.00 10.20 15.10 13.30 12.10 14.20 16.30 17.80 18.40 18.10 18.20 18.80 19.80 17.70 17.80 18.40 19.20 19.60 20.60\n10.20 12.10 11.80 11.20 10.80 18.50 18.70 18.40 18.80 10.60 10.80 10.90 11.70 12.20 10.00 17.20 18.10 17.80 18.20 17.70\n14.80 15.00 15.40 15.50 15.00 14.70 14.50 18.80 18.70 19.30 15.00 17.00 16.00 12.00 14.00 19.00 11.00 19.10 10.20 10.10\n7.60 7.50 7.80 7.60 7.30 8.30 9.20 7.40 7.90 8.30 9.20 8.50 8.30 8.60 8.50 8.60 9.50 6.30 8.20 8.10";
-const SAMPLE_AS="JC, 734/642\nRUB, 734/650\nLC, 736/750, LC-290\nJC, 737/370\nLC, 737/900, LC-290\nSTATION, 738/500, Balotra St.\nLC, 738/650, LC-293\nJC, 739/155";
-function sample(){$("offs").value=SAMPLE_OFFS;$("assets").value=SAMPLE_AS;$("start").value="734/000";$("int").value=50}
-const fmt=a=>Math.floor(a/1000)+"/"+String(Math.round(a%1000)).padStart(3,"0");
-const pc=t=>{const m=String(t).trim().match(/^(\d+)\s*\/\s*(\d{1,3})$/);return m?(+m[1])*1000+(+m[2]):NaN};
-let S=null,cur=0;
-function parse(){
- const err=m=>{$("err").textContent=m;return null};
- const start=pc($("start").value);if(isNaN(start))return err("Start chainage must look like 734/000.");
- const it=+$("int").value;if(!(it>=10&&it<=100)||1000%it)return err("Interval must divide 1000 evenly (for example 25, 50 or 100).");
- const tok=$("offs").value.split(/[\s,;]+/).filter(Boolean),off=tok.map(Number);
- if(!off.length)return err("Add at least one offset value.");
- const bad=tok.findIndex((t,i)=>!isFinite(off[i])||off[i]<0);
- if(bad>=0)return err(`Offset number ${bad+1} ("${tok[bad]}") is not a valid positive number.`);
- const assets=[];
- for(const [n,l] of $("assets").value.split("\n").entries()){
-  if(!l.trim())continue;
-  const p=l.split(",").map(x=>x.trim()),k=(p[0]||"").toUpperCase(),a=pc(p[1]);
-  if(!["JC","RUB","LC","BRIDGE","CULVERT","STATION"].includes(k))return err(`Asset line ${n+1}: type must be JC, RUB, LC, BRIDGE, CULVERT or STATION.`);
-  if(isNaN(a))return err(`Asset line ${n+1}: chainage must look like 736/750.`);
-  assets.push({k,a,n:p[2]||""});
- }
- $("err").textContent="";
- const per=1000/it,sheets=Math.ceil(off.length/per);
- return{start,it,off,assets,per,sheets,len:(off.length-1)*it};
-}
-const NAME={JC:"Joint chamber",RUB:"RUB",LC:"LC gate",BRIDGE:"Bridge",CULVERT:"Culvert",STATION:"Station"};
-function shOf(a){return Math.floor((a-S.start)/1000)}
-function generate(){
- const s=parse();if(!s)return;S=s;cur=0;$("out").hidden=false;
- const tabs=$("tabs");tabs.innerHTML="";
- for(let i=0;i<S.sheets;i++){const b=document.createElement("button");b.textContent=`Sheet ${i+1} (${fmt(S.start+i*1000).split("/")[0]} km)`;b.onclick=()=>{cur=i;draw()};tabs.appendChild(b)}
- const inside=S.assets.filter(a=>a.a>=S.start&&a.a<S.start+S.sheets*1000);
- $("stats").textContent=`${S.off.length} offsets · ${S.sheets} sheet${S.sheets>1?"s":""} · about ${(S.len/1000).toFixed(2)} km from ${fmt(S.start)} to ${fmt(S.start+S.len)} · ${inside.length} assets` + (inside.length<S.assets.length?` · ${S.assets.length-inside.length} asset(s) lie outside the route and are skipped`:"");
- $("at").querySelector("tbody").innerHTML=inside.sort((x,y)=>x.a-y.a).map(a=>`<tr><td>${NAME[a.k]}${a.n?" – "+a.n:""}</td><td>${fmt(a.a)}</td><td>${shOf(a.a)+1}/${S.sheets}</td></tr>`).join("")||`<tr><td colspan="3">No assets entered.</td></tr>`;
- overview(inside);draw();
-}
-function overview(A){
- const x0=30,x1=970,L=S.sheets*1000,sx=a=>x0+(x1-x0)*(a-S.start)/L;
- const mo=Math.max(...S.off),pts=S.off.map((v,i)=>`${sx(S.start+i*S.it)},${50+v/mo*28}`).join(" ");
- let s=`<line x1="${x0}" x2="${x1}" y1="50" y2="50" stroke="var(--ink)" stroke-width="4"/><polyline points="${pts}" fill="none" stroke="var(--cable)" stroke-width="1.6"/>`;
- for(let i=0;i<=S.sheets;i++){const x=sx(S.start+i*1000);s+=`<line x1="${x}" x2="${x}" y1="36" y2="96" stroke="var(--mute)" stroke-dasharray="3 3"/><text x="${x}" y="108" text-anchor="middle">${fmt(S.start+i*1000)}</text>`}
- A.forEach(a=>{const x=sx(a.a);s+=`<circle cx="${x}" cy="${a.k==="STATION"?50:30}" r="4" fill="var(--hot)"/><text x="${x}" y="${a.k==="STATION"?20:22}" text-anchor="middle" font-size="7.5" fill="var(--hot)">${a.k==="LC"&&a.n?a.n:a.k==="STATION"?a.n||"Station":a.k}</text>`});
- $("ov").innerHTML=s;
-}
-function draw(){
- [...$("tabs").children].forEach((b,i)=>b.setAttribute("aria-pressed",i===cur));
- const X0=50,X1=950,TY=130,sx=m=>X0+(X1-X0)*m/1000,ao=S.start+cur*1000,N=S.per;
- const off=S.off.slice(cur*N,cur*N+N),n=off.length,mo=Math.max(...S.off),sc=Math.min(7,150/mo);
- const cy=i=>TY+off[Math.min(i,n-1)]*sc,sp=(X1-X0)/N,cw=Math.min(36,sp-2),fs=N>20?6.5:9;
- let s=`<rect x="4" y="4" width="992" height="422" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="8" y="26">Offset (m)</text><text x="8" y="46">Chainage</text>`;
- for(let i=0;i<n;i++){const x=sx(i*S.it)-cw/2,c=cur*1000+i*S.it;
-  s+=`<rect x="${x}" y="16" width="${cw}" height="14" fill="none" stroke="var(--ink)" stroke-width=".6"/><text x="${x+cw/2}" y="26" text-anchor="middle" font-size="${fs}">${off[i].toFixed(2)}</text><rect x="${x}" y="36" width="${cw}" height="14" fill="none" stroke="var(--ink)" stroke-width=".6"/><text x="${x+cw/2}" y="46" text-anchor="middle" font-size="${fs}">${(c%1000)||"000"}</text>`}
- s+=`<text x="${X0}" y="64" font-weight="bold">${fmt(ao)}</text><text x="${X1}" y="64" text-anchor="end" font-weight="bold">${fmt(ao+1000)}</text>`;
- s+=`<circle cx="30" cy="90" r="11" fill="none" stroke="var(--ink)"/><text x="30" y="93" text-anchor="middle" font-size="7">${$("from").value}</text><circle cx="975" cy="90" r="11" fill="none" stroke="var(--ink)"/><text x="975" y="93" text-anchor="middle" font-size="7">${$("to").value}</text>`;
- const A=S.assets.filter(a=>a.a>=ao&&a.a<ao+1000);
- A.filter(a=>a.k==="STATION").forEach(a=>{const p=a.a-ao,a1=sx(p-220),b=sx(p-140),c=sx(p+140),d=sx(p+220);
-  s+=`<g fill="none" stroke="var(--ink)" stroke-width="1.4"><path d="M${a1} ${TY}L${b} ${TY-28}L${c} ${TY-28}L${d} ${TY}"/><path d="M${a1-10} ${TY}L${b-4} ${TY-52}L${c+4} ${TY-52}L${d+10} ${TY}"/></g><rect x="${sx(p)-45}" y="55" width="90" height="16" fill="var(--paper)" stroke="var(--ink)"/><text x="${sx(p)}" y="66" text-anchor="middle" font-weight="bold" font-size="10">${a.n||"Station"}</text>`});
- s+=`<line x1="${X0}" x2="${X1}" y1="${TY}" y2="${TY}" stroke="var(--ink)" stroke-width="5"/><line x1="${X0}" x2="${X1}" y1="${TY}" y2="${TY}" stroke="var(--paper)" stroke-width="3" stroke-dasharray="1.5 4"/><text x="${X0}" y="${TY-8}">Railway track</text>`;
- let pts="";
- for(let i=0;i<n;i++){const x=sx(i*S.it),y=cy(i);pts+=`${x},${y} `;
-  s+=`<line x1="${x}" x2="${x}" y1="${TY}" y2="${y}" stroke="var(--mute)" stroke-width=".6"/><path d="M${x-2} ${TY+5}L${x} ${TY}L${x+2} ${TY+5}M${x-2} ${y-5}L${x} ${y}L${x+2} ${y-5}" fill="none" stroke="var(--mute)" stroke-width=".6"/>`;
-  if(N<=20)s+=`<text x="${x+2}" y="${(TY+y)/2}" transform="rotate(-90 ${x+2} ${(TY+y)/2})" text-anchor="middle" font-size="7.5">${off[i].toFixed(2)}</text>`}
- s+=`<polyline points="${pts}" fill="none" stroke="var(--cable)" stroke-width="2"/><text x="${X0}" y="${cy(0)+14}" fill="var(--cable)">OFC</text>`;
- A.forEach(a=>{const p=a.a-ao,x=sx(p),i=Math.round(p/S.it),y=cy(i),lb=`${a.n?a.n+" ":""}${fmt(a.a)}`;
-  if(a.k==="JC")s+=`<rect x="${x-8}" y="${y-8}" width="16" height="16" fill="var(--paper)" stroke="var(--hot)" stroke-width="1.6"/><text x="${x}" y="${y+3}" text-anchor="middle" font-size="6" fill="var(--hot)">JC</text><text x="${x}" y="${y+22}" text-anchor="middle" fill="var(--hot)">${lb}</text>`;
-  if(a.k==="RUB")s+=`<path d="M${x-10} ${TY-6}q10 -16 20 0M${x-10} ${TY+6}q10 16 20 0" fill="none" stroke="var(--hot)" stroke-width="1.6"/><text x="${x}" y="${TY-26}" text-anchor="middle" fill="var(--hot)">RUB ${lb}</text>`;
-  if(a.k==="LC")s+=`<line x1="${x-9}" y1="${TY+10}" x2="${x+9}" y2="${TY-10}" stroke="var(--hot)" stroke-width="4"/><text x="${x}" y="${TY-16}" text-anchor="middle" fill="var(--hot)">${a.n||"LC"}</text>`;
-  if(a.k==="BRIDGE")s+=`<path d="M${x-9} ${TY-14}V${TY+14}M${x+9} ${TY-14}V${TY+14}M${x-9} ${TY-14}H${x+9}M${x-9} ${TY+14}H${x+9}" fill="none" stroke="var(--hot)" stroke-width="1.6"/><text x="${x}" y="${TY-20}" text-anchor="middle" fill="var(--hot)">Bridge ${lb}</text>`;
-  if(a.k==="CULVERT")s+=`<path d="M${x-10} ${TY-12}L${x-3} ${TY}L${x-10} ${TY+12}M${x+10} ${TY-12}L${x+3} ${TY}L${x+10} ${TY+12}" fill="none" stroke="var(--hot)" stroke-width="1.6"/><text x="${x}" y="${TY-18}" text-anchor="middle" fill="var(--hot)">Culvert ${lb}</text>`;
-  if(a.k==="STATION"){const hy=cy(i)+55;s+=`<path d="M${x} ${y}V${hy}" stroke="var(--cable)" stroke-width="1.6" fill="none"/><rect x="${x-24}" y="${hy}" width="48" height="26" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5"/><text x="${x}" y="${hy+11}" text-anchor="middle" font-weight="bold">OFC</text><text x="${x}" y="${hy+21}" text-anchor="middle" font-weight="bold">HUT</text>`}
- });
- for(let m=0;m<=1000;m+=S.it){const x=sx(m);s+=`<line x1="${x}" x2="${x}" y1="300" y2="${m%100?304:308}" stroke="var(--ink)"/>`;if(m%100===0)s+=`<text x="${x}" y="319" text-anchor="middle">${m}</text>`}
- s+=`<line x1="${X0}" x2="${X1}" y1="300" y2="300" stroke="var(--ink)"/><text x="${X0}" y="332">Chainage in m from ${fmt(ao)} (offset taken at every ${S.it} m)</text>`;
- s+=`<g transform="translate(14,345)"><rect width="330" height="74" fill="none" stroke="var(--ink)"/><text x="6" y="12" font-weight="bold">Legend</text><line x1="10" x2="40" y1="26" y2="26" stroke="var(--cable)" stroke-width="2"/><text x="46" y="29">OFC laid</text><line x1="10" x2="40" y1="42" y2="42" stroke="var(--ink)" stroke-width="4"/><text x="46" y="45">Railway track</text><rect x="14" y="52" width="14" height="14" fill="none" stroke="var(--hot)" stroke-width="1.6"/><text x="46" y="63">Joint chamber (JC)</text><path d="M180 22q10 -12 20 0M180 30q10 12 20 0" fill="none" stroke="var(--hot)" stroke-width="1.6"/><text x="210" y="30">RUB</text><line x1="180" y1="48" x2="200" y2="38" stroke="var(--hot)" stroke-width="4"/><text x="210" y="46">LC gate</text><text x="180" y="66" font-size="7.5">All dimensions are in metres.</text></g>`;
- const t=$("title").value;
- s+=`<g transform="translate(410,345)" fill="none" stroke="var(--ink)"><rect width="576" height="74"/><line x1="0" x2="576" y1="26" y2="26"/><line x1="0" x2="576" y1="50" y2="50"/><line x1="144" x2="144" y1="26" y2="74"/><line x1="288" x2="288" y1="26" y2="74"/><line x1="432" x2="432" y1="26" y2="74"/></g><g transform="translate(410,345)"><text x="288" y="17" text-anchor="middle" font-size="11" font-weight="bold">${esc(t)}</text><text x="6" y="40">Prepared by: ${esc($("prep").value)}</text><text x="150" y="40">Checked by: ${esc($("chk").value)}</text><text x="294" y="40">Approved by: ${esc($("app").value)}</text><text x="438" y="40">Status: Prototype</text><text x="6" y="66">Sheet No. ${cur+1} /${S.sheets}</text><text x="150" y="66">${fmt(ao)} to ${fmt(ao+1000)}</text><text x="294" y="66">Offsets scale 1:${(1/sc*1).toFixed(2).replace(/\.?0+$/,"")} of 1000 m</text></g>`;
- $("svg").innerHTML=s;
-}
+const C={ink:"#14213d",mute:"#667089",cab:"#0f766e",hot:"#c2410c",paper:"#fffef9"};
+const TYPES={JC:"Joint chamber",RUB:"RUB",LC:"LC gate",BRIDGE:"Bridge",CULVERT:"Culvert",STATION:"Station"};
+const F=["title","start","it","from","to","prep","chk","app"];
+const SAMPLE={title:"OFC ROUTE PLAN (SMR Jn - BME St.) of Jodhpur Division",start:"734/000",it:"50",from:"JNE",to:"TVL",prep:"ABSCO Kolkata",chk:"SSE/T/P/JU",app:"Dy. CSTE/P/JU",
+offs:"15.70 13.30 12.80 13.10 13.20 12.70 19.20 17.40 17.90 18.30 15.30 13.50 3.80 12.60 11.50 10.20 19.50 16.30 14.20 15.10\n11.80 11.60 11.00 11.40 12.00 11.80 11.70 10.80 11.00 10.40 19.30 19.80 10.00 10.40 10.60 10.20 10.00 10.30 10.10 10.40\n18.80 19.00 10.20 15.10 13.30 12.10 14.20 16.30 17.80 18.40 18.10 18.20 18.80 19.80 17.70 17.80 18.40 19.20 19.60 20.60\n10.20 12.10 11.80 11.20 10.80 18.50 18.70 18.40 18.80 10.60 10.80 10.90 11.70 12.20 10.00 17.20 18.10 17.80 18.20 17.70\n14.80 15.00 15.40 15.50 15.00 14.70 14.50 18.80 18.70 19.30 15.00 17.00 16.00 12.00 14.00 19.00 11.00 19.10 10.20 10.10\n7.60 7.50 7.80 7.60 7.30 8.30 9.20 7.40 7.90 8.30 9.20 8.50 8.30 8.60 8.50 8.60 9.50 6.30 8.20 8.10",
+assets:[["JC","734/642",""],["RUB","734/650",""],["LC","736/750","LC-290"],["JC","737/370",""],["LC","737/900","LC-290"],["STATION","738/500","Balotra St."],["LC","738/650","LC-293"],["JC","739/155",""]]};
+const BLANK={title:"OFC ROUTE PLAN",start:"0/000",it:"50",from:"START",to:"END",prep:"",chk:"",app:"",offs:"",assets:[]};
+let D=JSON.parse(JSON.stringify(SAMPLE)),cur=0,S=null;
 const esc=v=>String(v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-$("gen").onclick=generate;$("sample").onclick=()=>{sample();generate()};
-$("clear").onclick=()=>{$("offs").value="";$("assets").value="";$("out").hidden=true;$("err").textContent=""};
-sample();generate();
+const pc=t=>{const m=String(t).trim().match(/^(\d+)\s*[\/.]\s*(\d{1,3})$/);return m?+m[1]*1000+ +m[2]:NaN};
+const fmt=a=>Math.floor(a/1000)+"/"+String(Math.round(a%1000)).padStart(3,"0");
+try{const s=localStorage.getItem("rps");if(s)D=JSON.parse(s)}catch(e){}
+function toForm(){F.forEach(k=>$(k).value=D[k]);$("offs").value=D.offs;rows()}
+function rows(){$("rows").innerHTML=D.assets.map((a,i)=>`<div class="arow" data-i="${i}"><select aria-label="Type">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}"${a[0]===k?" selected":""}>${v}</option>`).join("")}</select><input aria-label="Chainage" placeholder="736/750" value="${esc(a[1])}"><input aria-label="Label" placeholder="Label (optional)" value="${esc(a[2]||"")}"><button aria-label="Remove asset" data-x="${i}">✕</button></div>`).join("")||'<p class="msg">No assets yet. Add joint chambers, gates, bridges or a station.</p>'}
+function parse(){
+ const start=pc(D.start);if(isNaN(start))return{e:"Start chainage should look like 734/000."};
+ const it=+D.it,tok=D.offs.split(/[\s,;]+/).filter(Boolean);
+ if(!tok.length)return{e:"Paste your offsets in step 2 to see the plan."};
+ const off=tok.map(Number),b=off.findIndex(v=>!isFinite(v)||v<0);
+ if(b>=0)return{e:`Offset #${b+1} ("${tok[b]}") is not a valid number.`};
+ const per=1000/it,as=[];let w=[];
+ for(const [i,a] of D.assets.entries()){const c=pc(a[1]);if(isNaN(c))return{e:`Asset ${i+1}: chainage should look like 736/750.`};as.push({k:a[0],a:c,n:a[2]})}
+ const sheets=Math.ceil(off.length/per),end=start+(off.length-1)*it;
+ if(off.length%per)w.push(`Last sheet has only ${off.length%per} of ${per} offsets.`);
+ const out=as.filter(a=>a.a<start||a.a>end);if(out.length)w.push(`${out.length} asset(s) lie outside ${fmt(start)}–${fmt(end)} and are hidden.`);
+ return{start,it,off,per,sheets,end,as:as.filter(a=>a.a>=start&&a.a<=end),w,mo:Math.max(...off)};
+}
+function sheet(i,S){
+ const X0=50,X1=950,TY=130,sx=m=>X0+(X1-X0)*m/1000,ao=S.start+i*1000,N=S.per,off=S.off.slice(i*N,i*N+N),n=off.length,sc=Math.min(7,150/S.mo);
+ const cy=k=>TY+off[Math.min(k,n-1)]*sc,cw=Math.min(36,(X1-X0)/N-2),fs=N>20?6.5:9,T=(x,y,t,x2="",c="")=>`<text x="${x}" y="${y}" ${x2}${c}>${t}</text>`;
+ let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430"><style>text{font:9px Arial,sans-serif;fill:${C.ink}}</style><rect width="1000" height="430" fill="${C.paper}"/><rect x="4" y="4" width="992" height="422" fill="none" stroke="${C.ink}" stroke-width="1.5"/>`+T(8,26,"Offset (m)")+T(8,46,"Chainage");
+ for(let k=0;k<n;k++){const x=sx(k*S.it)-cw/2,c=i*1000+k*S.it;s+=`<rect x="${x}" y="16" width="${cw}" height="14" fill="none" stroke="${C.ink}" stroke-width=".6"/><rect x="${x}" y="36" width="${cw}" height="14" fill="none" stroke="${C.ink}" stroke-width=".6"/>`+T(x+cw/2,26,off[k].toFixed(2),`text-anchor="middle" font-size="${fs}"`)+T(x+cw/2,46,c%1000||"000",`text-anchor="middle" font-size="${fs}"`)}
+ s+=T(X0,64,fmt(ao),'font-weight="bold"')+T(X1,64,fmt(ao+1000),'text-anchor="end" font-weight="bold"');
+ [[30,D.from],[975,D.to]].forEach(([x,t])=>s+=`<circle cx="${x}" cy="90" r="11" fill="none" stroke="${C.ink}"/>`+T(x,93,esc(t).slice(0,5),'text-anchor="middle" font-size="7"'));
+ const A=S.as.filter(a=>a.a>=ao&&a.a<ao+1000);
+ A.filter(a=>a.k==="STATION").forEach(a=>{const p=a.a-ao;s+=`<g fill="none" stroke="${C.ink}" stroke-width="1.4"><path d="M${sx(p-220)} ${TY}L${sx(p-140)} ${TY-28}L${sx(p+140)} ${TY-28}L${sx(p+220)} ${TY}"/><path d="M${sx(p-220)-10} ${TY}L${sx(p-140)-4} ${TY-52}L${sx(p+140)+4} ${TY-52}L${sx(p+220)+10} ${TY}"/></g><rect x="${sx(p)-45}" y="55" width="90" height="16" fill="${C.paper}" stroke="${C.ink}"/>`+T(sx(p),66,esc(a.n||"Station"),'text-anchor="middle" font-weight="bold" font-size="10"')});
+ s+=`<line x1="${X0}" x2="${X1}" y1="${TY}" y2="${TY}" stroke="${C.ink}" stroke-width="5"/><line x1="${X0}" x2="${X1}" y1="${TY}" y2="${TY}" stroke="${C.paper}" stroke-width="3" stroke-dasharray="1.5 4"/>`+T(X0,TY-8,"Railway track");
+ let pts="";
+ for(let k=0;k<n;k++){const x=sx(k*S.it),y=cy(k);pts+=`${x},${y} `;s+=`<line x1="${x}" x2="${x}" y1="${TY}" y2="${y}" stroke="${C.mute}" stroke-width=".6"/><path d="M${x-2} ${TY+5}L${x} ${TY}L${x+2} ${TY+5}M${x-2} ${y-5}L${x} ${y}L${x+2} ${y-5}" fill="none" stroke="${C.mute}" stroke-width=".6"/>`;if(N<=20)s+=T(x+2,(TY+y)/2,off[k].toFixed(2),`transform="rotate(-90 ${x+2} ${(TY+y)/2})" text-anchor="middle" font-size="7.5"`)}
+ s+=`<polyline points="${pts}" fill="none" stroke="${C.cab}" stroke-width="2"/>`+T(X0,cy(0)+14,"OFC",`fill="${C.cab}"`);
+ A.forEach(a=>{const p=a.a-ao,x=sx(p),y=cy(Math.round(p/S.it)),h=`fill="${C.hot}" text-anchor="middle"`,lb=esc((a.n?a.n+" ":"")+fmt(a.a)),st=`fill="none" stroke="${C.hot}" stroke-width="1.6"`;
+  if(a.k==="JC")s+=`<rect x="${x-8}" y="${y-8}" width="16" height="16" fill="${C.paper}" stroke="${C.hot}" stroke-width="1.6"/>`+T(x,y+3,"JC",h+' font-size="6"')+T(x,y+22,lb,h);
+  if(a.k==="RUB")s+=`<path d="M${x-10} ${TY-6}q10 -16 20 0M${x-10} ${TY+6}q10 16 20 0" ${st}/>`+T(x,TY-26,"RUB "+lb,h);
+  if(a.k==="LC")s+=`<line x1="${x-9}" y1="${TY+10}" x2="${x+9}" y2="${TY-10}" stroke="${C.hot}" stroke-width="4"/>`+T(x,TY-16,esc(a.n||"LC"),h);
+  if(a.k==="BRIDGE")s+=`<path d="M${x-9} ${TY-14}V${TY+14}M${x+9} ${TY-14}V${TY+14}M${x-9} ${TY-14}H${x+9}M${x-9} ${TY+14}H${x+9}" ${st}/>`+T(x,TY-20,"Bridge "+lb,h);
+  if(a.k==="CULVERT")s+=`<path d="M${x-10} ${TY-12}L${x-3} ${TY}L${x-10} ${TY+12}M${x+10} ${TY-12}L${x+3} ${TY}L${x+10} ${TY+12}" ${st}/>`+T(x,TY-18,"Culvert "+lb,h);
+  if(a.k==="STATION"){const hy=y+55;s+=`<path d="M${x} ${y}V${hy}" stroke="${C.cab}" stroke-width="1.6" fill="none"/><rect x="${x-24}" y="${hy}" width="48" height="26" fill="${C.paper}" stroke="${C.ink}" stroke-width="1.5"/>`+T(x,hy+11,"OFC",'text-anchor="middle" font-weight="bold"')+T(x,hy+21,"HUT",'text-anchor="middle" font-weight="bold"')}
+  s+=`<title>${lb}</title>`});
+ for(let m=0;m<=1000;m+=S.it){const x=sx(m);s+=`<line x1="${x}" x2="${x}" y1="300" y2="${m%100?304:308}" stroke="${C.ink}"/>`+(m%100?"":T(x,319,m,'text-anchor="middle"'))}
+ s+=`<line x1="${X0}" x2="${X1}" y1="300" y2="300" stroke="${C.ink}"/>`+T(X0,332,`Chainage in m from ${fmt(ao)} (offset taken at every ${S.it} m)`);
+ s+=`<g transform="translate(14,345)"><rect width="330" height="74" fill="none" stroke="${C.ink}"/>`+T(6,12,"Legend",'font-weight="bold"')+`<line x1="10" x2="40" y1="26" y2="26" stroke="${C.cab}" stroke-width="2"/>`+T(46,29,"OFC laid")+`<line x1="10" x2="40" y1="42" y2="42" stroke="${C.ink}" stroke-width="4"/>`+T(46,45,"Railway track")+`<rect x="14" y="52" width="14" height="14" fill="none" stroke="${C.hot}" stroke-width="1.6"/>`+T(46,63,"Joint chamber (JC)")+`<path d="M180 22q10 -12 20 0M180 30q10 12 20 0" fill="none" stroke="${C.hot}" stroke-width="1.6"/>`+T(210,30,"RUB")+`<line x1="180" y1="48" x2="200" y2="38" stroke="${C.hot}" stroke-width="4"/>`+T(210,46,"LC gate")+T(180,66,"All dimensions are in metres.",'font-size="7.5"')+`</g>`;
+ s+=`<g transform="translate(410,345)" fill="none" stroke="${C.ink}"><rect width="576" height="74"/><path d="M0 26H576M0 50H576M144 26V74M288 26V74M432 26V74"/></g><g transform="translate(410,345)">`+T(288,17,esc(D.title),'text-anchor="middle" font-size="11" font-weight="bold"')+T(6,40,"Prepared by: "+esc(D.prep))+T(150,40,"Checked by: "+esc(D.chk))+T(294,40,"Approved by: "+esc(D.app))+T(438,40,"Status: Prototype")+T(6,66,`Sheet No. ${i+1} /${S.sheets}`)+T(150,66,`${fmt(ao)} to ${fmt(ao+1000)}`)+T(294,66,`Offset scale 1:${(1/sc).toFixed(1)}`)+`</g></svg>`;
+ return s;
+}
+function overview(S){
+ const x0=30,x1=970,L=S.sheets*1000,sx=a=>x0+(x1-x0)*(a-S.start)/L,pts=S.off.map((v,i)=>`${sx(S.start+i*S.it)},${52+v/S.mo*26}`).join(" ");
+ let s=`<svg viewBox="0 0 1000 118"><style>text{font:9px Arial,sans-serif;fill:${C.ink}}</style><line x1="${x0}" x2="${x1}" y1="50" y2="50" stroke="${C.ink}" stroke-width="4"/><polyline points="${pts}" fill="none" stroke="${C.cab}" stroke-width="1.6"/>`;
+ for(let i=0;i<=S.sheets;i++){const x=sx(S.start+i*1000);s+=`<line x1="${x}" x2="${x}" y1="36" y2="92" stroke="${C.mute}" stroke-dasharray="3 3"/><text x="${x}" y="106" text-anchor="middle">${fmt(S.start+i*1000)}</text>`}
+ S.as.forEach(a=>s+=`<circle cx="${sx(a.a)}" cy="${a.k==="STATION"?50:30}" r="4" fill="${C.hot}"/><text x="${sx(a.a)}" y="${a.k==="STATION"?20:22}" text-anchor="middle" fill="${C.hot}" style="fill:${C.hot}">${esc(a.k==="LC"&&a.n?a.n:a.k==="STATION"?a.n||"Station":a.k)}</text>`);
+ return s+"</svg>";
+}
+function render(){
+ D.offs=$("offs").value;F.forEach(k=>D[k]=$(k).value);
+ try{localStorage.setItem("rps",JSON.stringify(D))}catch(e){}
+ const r=parse(),m=$("msg"),v=$("view");
+ if(r.e){m.className="msg e";m.textContent=r.e;v.innerHTML='<div class="empty">Your plan will appear here.</div>';S=null;return}
+ S=r;if(cur>=S.sheets)cur=S.sheets-1;
+ m.className="msg w";m.textContent=r.w.join(" ");
+ v.innerHTML=`<div class="chips"><span class="chip">${r.off.length} offsets</span><span class="chip">${r.sheets} sheet${r.sheets>1?"s":""}</span><span class="chip">${fmt(r.start)} to ${fmt(r.end)}</span><span class="chip">${r.as.length} assets</span></div><div class="paper" style="border-width:1px">${overview(r)}</div><div class="tabs" id="tabs">${Array.from({length:r.sheets},(_,i)=>`<button data-s="${i}" aria-pressed="${i===cur}">Sheet ${i+1}</button>`).join("")}</div><div class="paper">${sheet(cur,r)}</div><div class="card"><h2>Asset list</h2><table><tr><th>Asset</th><th>Chainage</th><th>Sheet</th></tr>${r.as.slice().sort((a,b)=>a.a-b.a).map(a=>`<tr><td>${TYPES[a.k]}${a.n?" – "+esc(a.n):""}</td><td>${fmt(a.a)}</td><td>${Math.floor((a.a-r.start)/1000)+1}/${r.sheets}</td></tr>`).join("")||'<tr><td colspan="3">None</td></tr>'}</table></div>`;
+}
+let tm;const later=()=>{clearTimeout(tm);tm=setTimeout(render,250)};
+F.concat("offs").forEach(k=>$(k).addEventListener("input",later));
+$("rows").addEventListener("input",e=>{const r=e.target.closest(".arow");if(!r)return;const i=+r.dataset.i,c=r.children;D.assets[i]=[c[0].value,c[1].value,c[2].value];later()});
+$("rows").addEventListener("click",e=>{const x=e.target.dataset.x;if(x!==undefined){D.assets.splice(+x,1);rows();render()}});
+$("bAdd").onclick=()=>{D.assets.push(["JC","",""]);rows();$("rows").lastElementChild.children[1].focus()};
+$("view").addEventListener("click",e=>{const s=e.target.dataset.s;if(s!==undefined){cur=+s;render()}});
+document.addEventListener("keydown",e=>{if(!S||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==="ArrowRight"&&cur<S.sheets-1){cur++;render()}if(e.key==="ArrowLeft"&&cur>0){cur--;render()}});
+const dl=(name,txt,type)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
+$("bSvg").onclick=()=>S?dl(`sheet-${cur+1}.svg`,sheet(cur,S),"image/svg+xml"):alert("Add valid data first.");
+$("bPrint").onclick=()=>{if(!S)return alert("Add valid data first.");$("pa").innerHTML=Array.from({length:S.sheets},(_,i)=>sheet(i,S)).join("");window.print()};
+$("bSave").onclick=()=>dl("route-plan.json",JSON.stringify(D,null,1),"application/json");
+$("bLoad").onclick=()=>$("fJson").click();
+$("fJson").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const j=JSON.parse(t);if(typeof j.offs!=="string"||!Array.isArray(j.assets))throw 0;D=Object.assign({},BLANK,j);cur=0;toForm();render()}catch(x){$("msg").className="msg e";$("msg").textContent="That file is not a valid route plan project."}});e.target.value=""};
+$("bCsv").onclick=()=>$("fCsv").click();
+$("fCsv").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const v=t.split(/\r?\n/).map(l=>l.split(",").pop().trim()).filter(x=>x!==""&&isFinite(+x));$("offs").value=v.join(" ");render()});e.target.value=""};
+$("bSample").onclick=()=>{D=JSON.parse(JSON.stringify(SAMPLE));cur=0;toForm();render()};
+$("bClear").onclick=()=>{if(confirm("Clear everything and start a blank plan?")){D=JSON.parse(JSON.stringify(BLANK));cur=0;toForm();render()}};
+toForm();render();
 </script></body></html>
